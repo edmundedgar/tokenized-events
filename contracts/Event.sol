@@ -16,6 +16,9 @@ contract EventData {
     event OutcomeTokenSetRevocation(address indexed seller, uint outcomeTokenCount);
     event WinningsRedemption(address indexed receiver, uint winnings, bytes32 branch);
 
+    mapping(bytes32 => int) branch_outcome;
+    mapping(bytes32 => bool) is_branch_outcome_set;
+
     /*
      *  Storage
      */
@@ -34,6 +37,7 @@ contract EventData {
 /// @title Event contract - Provide basic functionality required by different event types
 /// @author Stefan George - <stefan@gnosis.pm>
 contract Event is EventData {
+
 
     /*
      *  Public functions
@@ -64,6 +68,21 @@ contract Event is EventData {
         OutcomeTokenSetRevocation(msg.sender, outcomeTokenCount);
     }
 
+    function setOutcome(bytes32 branch, bytes32 contentHash, bytes32 rcQuestionID, uint256 minBond, uint256 minTimeout, address arbitrator) {
+          require(questionId == keccak256(contentHash, minBond, minTimeout);
+          require(realityToken.isWhitelisted(arbitrator, branch);          
+          outcome = realityCheck.getFinalAnswerIfMatches(
+                rcQuestionID,
+                contentHash,
+                arbitrator,
+                minTimeout,
+                minBond
+          );
+          branch_outcome[branch] = int(outcome);
+          is_branch_outcome_set[branch] = true;
+        
+    }
+
  
     /// @dev gets winning event outcome
     /// @param branch is the branch on which a user wants to know the result
@@ -72,7 +91,8 @@ contract Event is EventData {
         view
         returns (int outcome)
     {
-          outcome = int(realityCheck.getFinalAnswer(branch, questionId));
+          require(is_branch_outcome_set[branch]);
+          return branch_outcome[branch];
     }
 
     /// @dev Returns outcome count
